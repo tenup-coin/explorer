@@ -2,7 +2,7 @@ var mongoose = require('mongoose')
   , Schema = mongoose.Schema;
  
 var TxSchema = new Schema({
-  txid: { type: String, lowercase: true, unique: true, index: true},
+  txid: { type: String, unique: true, index: true},
   vin: { type: Array, default: [] },
   vout: { type: Array, default: [] },
   total: { type: Number, default: 0 },

@@ -4,7 +4,6 @@ var mongoose = require('mongoose')
   , settings = require('../lib/settings')
   , request = require('request');
 
-var COUNT = 5000; //number of blocks to index
 
 function exit() {
   mongoose.disconnect();
@@ -17,19 +16,18 @@ dbString = dbString + '@' + settings.dbsettings.address;
 dbString = dbString + ':' + settings.dbsettings.port;
 dbString = dbString + '/' + settings.dbsettings.database;
 
-mongoose.connect(dbString, { useNewUrlParser: true, useCreateIndex: true } , function(err) {
+mongoose.connect(dbString, { useNewUrlParser: true } , function(err) {
   if (err) {
     console.log('Unable to connect to database: %s', dbString);
     console.log('Aborting');
     exit();
   } else {
-    request({uri: 'http://127.0.0.1:' + settings.port + '/api/getpeerinfo', json: true}, function (error, response, body) {
+    request({uri: 'http://127.0.0.1:' + settings.port + '/api/getmasternodes', json: true}, function (error, response, body) {
       lib.syncLoop(body.length, function (loop) {
         var i = loop.iteration();
         var address = body[i].addr.split(':')[0];
         db.find_peer(address, function(peer) {
-          console.log('peer found ' + address);
-	  if (peer) {
+          if (peer) {
             // peer already exists
             loop.next();
           } else {

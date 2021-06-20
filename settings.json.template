@@ -5,7 +5,7 @@
 */
 {
   // name your instance!
-  "title": "IQUIDUS",
+  "title": "Explorerz.top",
 
   "address": "127.0.0.1:3001",
 
@@ -14,6 +14,16 @@
 
   // coin symbol
   "symbol": "DRK",
+
+  // coin type
+  //  Options:
+  //    bitcoin = Default Bitcoin/Dash/... clones
+  //    ripple = Ripple clones
+  "baseType": "bitcoin",
+
+  // The epoch time for a ripple based coin.
+  // You can ignore this setting if you're not using a ripple based coin.
+  "rippleEpoch": 946684800,
 
   // logo
   "logo": "/images/logo.png",
@@ -61,19 +71,23 @@
   // menu settings
   "display": {
     "api": true,
-    "markets": true,
+    "markets": false,
     "richlist": true,
     "twitter": true,
     "facebook": false,
     "googleplus": false,
     "search": true,
     "movement": true,
-    "network": true
+    "network": true,
+    "masternodes": false,
+    "coininfo": false,
+    "coinmarketcap": false
   },
 
   // index page (valid options for difficulty are POW, POS or Hybrid)
   "index": {
     "show_hashrate": true,
+    "show_coin_supply": true,
     "difficulty": "POW",
     "last_txs": 100
   },
@@ -102,7 +116,8 @@
   "richlist": {
     "distribution": true,
     "received": true,
-    "balance": true
+    "balance": true,
+    "coin_supply": true
   },
   // movement page settings
   // min amount: show transactions greater than this value
@@ -114,14 +129,50 @@
     "high_flag": 5000
   },
 
+  // Masternodes page
+  // default port: Default port a masternode is running. 
+  "masternodes": {
+    "default_port": 12845,
+
+    // Use index-based values (starting with 0).
+    // 0 is the key of the masterlist data.
+    // -1 means that the info is not available.
+    "list_format": {
+      "address": 3,
+      "status": 1,
+      "lastseen": 5,
+      "lastpaid": -1,
+      "ip": 0
+    }
+  },
+
+
+  // Coin info page
+  "coininfo": {
+    "basic_info_links": [
+      ["Github", "http://github.com/"]
+    ],
+    "masternode_required": 1000,
+    "block_time_sec": 120,
+    "block_reward_mn": 5
+  },
+
+  // CoinMarketCap integration
+  "coinmarketcap": {
+    "ticker": "BTC"
+  },
+
   // twitter, facebook, googleplus
-  "twitter": "iquidus",
+  "twitter": "explorerztop",
   "facebook": "yourfacebookpage",
   "googleplus": "yourgooglepluspage",
 
   //genesis
   "genesis_tx": "65f705d2f385dc85763a317b3ec000063003d6b039546af5d8195a5ec27ae410",
   "genesis_block": "b2926a56ca64e0cd2430347e383f63ad7092f406088b9b86d6d68c2a34baef51",
+
+  // Fetch blocks from <index>
+  "fetch_blocks_from": 0,
 
   //heavy (enable/disable additional heavy features)
   "heavy": false,

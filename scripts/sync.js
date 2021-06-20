@@ -3,9 +3,13 @@ var mongoose = require('mongoose')
   , Tx = require('../models/tx')  
   , Address = require('../models/address')  
   , Richlist = require('../models/richlist')  
-  , Stats = require('../models/stats')  
+  , Stats = require('../models/stats')
+  , MasternodeStats = require('../models/masternodeStats')
+  , explorer = require('../lib/explorer')
   , settings = require('../lib/settings')
-  , fs = require('fs');
+  , fs = require('fs')
+  , BigNumber = require('bignumber.js')
+;
 
 var mode = 'update';
 var database = 'index';
@@ -54,6 +58,10 @@ if (process.argv[2] == 'index') {
   }
 } else if (process.argv[2] == 'market'){
   database = 'market';
+} else if (process.argv[2] === 'cmc'){
+  database = 'cmc';
+} else if (process.argv[2] === 'mnstats'){
+  database = 'mnstats';
 } else {
   usage();
 }
@@ -125,7 +133,7 @@ is_locked(function (exists) {
   } else {
     create_lock(function (){
       console.log("script launched with pid: " + process.pid);
-      mongoose.connect(dbString, function(err) {
+      mongoose.connect(dbString, { useNewUrlParser: true } , function(err) {
         if (err) {
           console.log('Unable to connect to database: %s', dbString);
           console.log('Aborting');
@@ -191,6 +199,113 @@ is_locked(function (exists) {
               });
             }
           });
+        } else if (database === 'cmc') {
+          // update CoinMarketCap
+          console.log("Updating CoinMarketCap data...");
+          db.check_cmc(settings.coinmarketcap.ticker, function(exists) {
+            if (exists === false) {
+              console.log('Run \'npm start\' to create database structures before running this script.');
+              exit();
+            }
+
+            db.update_coinmarketcap_db(settings.coinmarketcap.ticker, function (err) {
+              if (err === true) {
+                console.log('ERROR: %s: %s', settings.coinmarketcap.ticker, err);
+              }
+              else {
+                console.log('  CoinMarketCap for ticker %s updated successfully.', settings.coinmarketcap.ticker);
+              }
+
+              exit();
+            });
+
+          })
+        } else if (database === 'mnstats') {
+          console.log("Updating Masternode Stats...\n");
+
+          db.check_cmc(settings.coinmarketcap.ticker, function(exists) {
+            if (exists === false) {
+              console.log('Run \'npm start\' and sync cmc data before running this script.');
+              exit();
+            }
+
+            db.get_cmc(settings.coinmarketcap.ticker, function (cmc) {
+
+              var tsNow = Math.round(new Date().getTime() / 1000);
+              var ts24h = tsNow - (24 * 3600);
+              explorer.get_masternodelist(function (mnList) {
+                var mnPayees = [];
+                var mnPayeeIdx = settings.masternodes.list_format.address;
+                for (key in mnList) {
+                  if (!mnList.hasOwnProperty(key)) {
+                    continue;
+                  }
+
+                  if (settings.baseType === 'pivx') {
+                    mnPayees.push(mnList[key].addr);
+                  } else {
+                    var mnPayee = mnList[key].split(/(\s+)/).filter(function (e) {
+                      return e.trim().length > 0;
+                    })[mnPayeeIdx - 1];
+                    mnPayees.push(mnPayee);
+                  }
+
+                }
+
+                db.get_masternode_rewards(ts24h, mnPayees, function (mnRewards24h) {
+                  db.get_block_count(ts24h, function(blockCount24h) {
+                    explorer.get_masternodecount(function (mnCountTotal) {
+                      explorer.get_masternodeonlinecount(function (mnCountEnabled) {
+                        var mnReward24h = mnRewards24h / mnPayees.length;
+                        var roiDays = settings.coininfo.masternode_required / mnReward24h;
+                        var avgBlockTimeSec = Math.round((24*3600) / blockCount24h);
+
+                        console.log('    Data since ts : ', ts24h);
+                        console.log('  Blocks last 24h : ', blockCount24h);
+                        console.log('  Avg. block time : ', avgBlockTimeSec);
+                        console.log('  MN count  total : ', mnCountTotal);
+                        console.log('  MN count online : ', mnCountEnabled);
+                        console.log('  MNs rewards 24h : ', mnRewards24h);
+                        console.log('  MN  rewards 24h : ', mnReward24h);
+                        console.log('  MN     roi days : ', roiDays);
+                        console.log('  MN roi % annual : ', (365 / roiDays) * 100);
+                        console.log('  Coin price  BTC : ', cmc.price_btc);
+                        console.log('  Coin price  USD : ', cmc.price_usd);
+
+                        var nwMnStats = new MasternodeStats({
+                          symbol: settings.symbol,
+                          block_count_24h: blockCount24h,
+                          block_avg_time: avgBlockTimeSec,
+                          count_total: mnCountTotal,
+                          count_enabled: mnCountEnabled,
+                          roi_days: roiDays,
+                          reward_coins_24h: mnReward24h,
+                          price_btc: cmc.price_btc,
+                          price_usd: cmc.price_usd
+                        });
+
+                        nwMnStats.save(function (err, o) {
+                          if (err) {
+                            console.log('Failed to store the Masternode Stats object.', err);
+                          } else {
+                            console.log("Masternode Stats saved successfully.\n");
+                          }
+                          exit();
+                        });
+                      });
+                    });
+                  });
+                });
+              });
+            });
+
+
+
+
+          });
+
+
+
         } else {
           //update markets
           var markets = settings.markets.enabled;

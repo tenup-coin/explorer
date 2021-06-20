@@ -1,29 +1,38 @@
 {
   "name": "explorer",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "private": true,
   "scripts": {
     "start": "node --stack-size=10000 ./bin/cluster",
+    "dev": "./node_modules/nodemon/bin/nodemon.js --stack-size=10000 ./bin/instance",
+    "index-update": "node --stack-size=10000 scripts/sync.js index update",
+    "cmc-update": "node --stack-size=10000 scripts/sync.js cmc",
     "stop": "kill -2 $(cat tmp/cluster.pid)",
     "test": "node ./node_modules/jasmine/bin/jasmine.js"
   },
   "dependencies": {
-    "express": "~4.2.0",
-    "static-favicon": "~1.0.0",
-    "morgan": "~1.0.0",
-    "cookie-parser": "~1.0.1",
-    "body-parser": "~1.0.0",
-    "debug": "~0.7.4",
-    "jade": "~1.3.0",
-    "bitcoin-node-api": "0.1.0",
-    "request": "2.74.0",
+    "async": "^3.1.0",
+    "big-integer": "^1.6.44",
+    "bignumber.js": "^9.0.0",
+    "bitcoin-rpc-api": "0.0.5",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.4",
+    "debug": "^4.1.1",
+    "express": "^4.17.1",
+    "format-currency": "^1.0.0",
+    "format-num": "^1.0.0",
     "jsonminify": "0.2.3",
+    "jstransformer-markdown-it": "^2.1.0",
     "mongodb": "2.0.45",
-    "mongoose": "4.1.10",
-    "markdown-js": "0.0.3",
-    "qr-image": "~2.0.0"
+    "mongoose": "^5.6.9",
+    "morgan": "^1.9.1",
+    "pug": "^2.0.4",
+    "qr-image": "~2.0.0",
+    "request": "^2.88.0",
+    "static-favicon": "~1.0.0"
   },
   "devDependencies": {
-    "jasmine": "~2.1.0"
+    "jasmine": "^3.4.0",
+    "nodemon": "^1.19.1"
   }
 }
