@@ -30,6 +30,7 @@ html
           $.ajax({url: '/ext/summary', success: function(json){
             var data = json.data[0];
             $("#supply").text(data.supply);
+            $("#burnt").text(data.burnt);
             $("#difficulty").text(data.difficulty);
             $("#masternodeCount").text(data.masternodeCount);
             $("#masternodeOnlineCount").text(data.masternodeOnlineCount);
@@ -195,10 +196,10 @@ html
                       span#cmc_volume_24h -
                       =" USD"
         else
-          .col-lg-3.col-md-0
+          .col-lg-1.col-md-0
 
         if settings.index.show_coin_supply
-          - supplyPanelSize = settings.display.coinmarketcap == true ? "col-lg-2 col-md-4 col-sm-4" : "col-lg-3 col-md-4 col-sm-4"
+          - supplyPanelSize = "col-lg-2 col-md-4 col-sm-4"
           div(class=supplyPanelSize)
             .panel.panel-primary.panel-summary
               .panel-heading
@@ -207,6 +208,15 @@ html
                 row.text-center
                   .col-md-12
                     h1#supply -
+          - burntPanelSize = settings.display.coinmarketcap == true ? "col-lg-2 col-md-4 col-sm-4" : "col-lg-3 col-md-4 col-sm-4"
+          div(class=burntPanelSize)
+            .panel.panel-primary.panel-summary
+              .panel-heading
+                span #{settings.locale.ex_burnt}
+              .panel-body(style="padding-top: 35px")
+                row.text-center
+                  .col-md-12
+                    h1#burnt -
         if settings.index.show_hashrate
           .col-lg-3.col-md-4.col-sm-4
             .panel.panel-primary.panel-summary

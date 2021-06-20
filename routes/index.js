@@ -424,6 +424,7 @@ router.get('/ext/summary', function(req, res) {
                     masternodeCount: masternodecount,
                     masternodeOnlineCount: masternodeonlinecount,
                     supply: formatNum(stats.supply, { maxFraction: 4 }),
+                    burnt: formatNum(stats.burnt, { maxFraction: 4 }),
                     hashrate: hashrate,
                     lastPriceBtc: formatNum(stats.last_price, { maxFraction: 8 }),
                     lastPriceUsd: formatCurrency(cmc.price_usd, { maxFraction: 6 }),
