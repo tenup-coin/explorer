@@ -423,7 +423,7 @@ router.get('/ext/summary', function(req, res) {
                     difficultyHybrid: difficultyHybrid,
                     masternodeCount: masternodecount,
                     masternodeOnlineCount: masternodeonlinecount,
-                    supply: formatNum(stats.supply, { maxFraction: 4 }),
+                    supply: formatNum(stats.supply - stats.burnt, { maxFraction: 4 }),
                     burnt: formatNum(stats.burnt, { maxFraction: 4 }),
                     hashrate: hashrate,
                     lastPriceBtc: formatNum(stats.last_price, { maxFraction: 8 }),
