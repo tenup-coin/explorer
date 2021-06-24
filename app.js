@@ -60,7 +60,10 @@ app.use('/api', bitcoinapi.api);
 app.use('/', routes);
 app.use('/ext/getmoneysupply', function(req,res){
   lib.get_supply(function(supply){
-    res.send(' '+supply);
+    // This needs to be optimised and stored in stats instead of live calculation
+    lib.get_burntAccount(function(account){
+      res.send(' ' + (supply - (account.balance/100000000)));
+    });
   });
 });
 

@@ -66,6 +66,7 @@ block content
           { data: 'timestamp', width: '25%' },
         ]
       });
+      $.fn.dataTable.ext.errMode = 'throw';
       setInterval( function () {
         rtable.api().ajax.reload(null, false);
         stable.api().ajax.reload(null, false);
