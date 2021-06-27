@@ -81,7 +81,7 @@
     "network": true,
     "masternodes": false,
     "coininfo": false,
-    "coinmarketcap": false
+    "coinmarketcap": true
   },
 
   // index page (valid options for difficulty are POW, POS or Hybrid)
@@ -159,7 +159,7 @@
 
   // CoinMarketCap integration
   "coinmarketcap": {
-    "ticker": "BTC"
+    "ticker": "TUP"
   },
 
   // twitter, facebook, googleplus
